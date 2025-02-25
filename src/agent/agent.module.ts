@@ -8,6 +8,7 @@ import { Otp } from './entity/otp.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Agent, Otp])],
   controllers: [AgentController],
-  providers: [AgentService]
+  providers: [AgentService],
+  exports: [AgentService, TypeOrmModule]
 })
 export class AgentModule {}

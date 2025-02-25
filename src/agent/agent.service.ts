@@ -6,7 +6,8 @@ import { CreateAgentDto } from './dto/create-agent-dto';
 import { Otp } from './entity/otp.entity';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SetPasswordDto } from './dto/set-password.dto';
-import { AgentLoginDto } from './dto/agent-login.dto';
+
+
 
 @Injectable()
 export class AgentService {
@@ -78,14 +79,5 @@ export class AgentService {
         })
     }
 
-    //agent logging 
-    async agentLogin(agentLoginDto: AgentLoginDto){
-        const agent = await this.agentRepository.findOne({where: {email: agentLoginDto.email}});
-
-         if(!agent){
-            throw new BadRequestException('Agent not found')
-        }
-
-        return {message:'You are logged in now'}
-    }
+    
 }

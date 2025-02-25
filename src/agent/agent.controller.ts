@@ -33,11 +33,4 @@ export class AgentController {
         return this.agentService.findAll()
     }
 
-    //to login as an agent
-    @Post('login')
-    agentLogin(@Body() input: AgentLoginDto){
-        return this.agentService.agentLogin(input)
-    }
-
-
 }
