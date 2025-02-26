@@ -23,6 +23,7 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.1",
+<<<<<<< HEAD
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
@@ -35,6 +36,14 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "twilio": "^5.4.5",
+=======
+    "@nestjs/mapped-types": "*",
+    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.0",
+    "mssql": "^10.0.4",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+>>>>>>> 74234ca (created .env)
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
