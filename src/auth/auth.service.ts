@@ -5,12 +5,14 @@ import { AgentLoginDto } from 'src/agent/dto/agent-login.dto';
 import { Agent } from 'src/agent/entity/agent.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectRepository(Agent)
-        private readonly agentRepository:Repository<Agent>
+        private readonly agentRepository:Repository<Agent>,
+        private jwtService: JwtService
     ){}
 
     //validating the user 
@@ -34,15 +36,19 @@ export class AuthService {
         return agent
     }
 
-    //returing the user
+    //generating access token for the user
     async agentLogin(agentLoginDto: AgentLoginDto){
         const agent = await this.validateAgent(agentLoginDto)
 
-        return {
-            accessToken: 'fake-token',
-            agentId: agent.id,
-            agentName: agent.name
+        const paylaod = {email: agent.email, id: agent.id}
+
+        const access_token = await this.jwtService.sign(paylaod)
+
+        return{
+            access_token: access_token,
+            email: agent.email
         }
+        
     }
 
 
