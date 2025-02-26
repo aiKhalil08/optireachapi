@@ -9,6 +9,7 @@ import { SetPasswordDto } from './dto/set-password.dto';
 
 
 
+
 @Injectable()
 export class AgentService {
     constructor(
@@ -18,12 +19,15 @@ export class AgentService {
         @InjectRepository(Otp)
         private readonly otpRepository:Repository<Otp>
     ){}
+    
+    
 
     //creating a user
     async createAgent(createAgentDto: CreateAgentDto){
 
         //check if the agent exists
         const existingAgent = await this.agentRepository.findOne({where: {email: createAgentDto.email}})
+
         if(existingAgent){
             throw new BadRequestException('Agent with this email already exists.');
         }
@@ -37,6 +41,7 @@ export class AgentService {
 
         return {message: 'Agent registered successfully, OPT sent', opt: otpCode}
     }
+
 
     //confirming the otp
     async confirmOtp(verifyOtpDto: VerifyOtpDto){
