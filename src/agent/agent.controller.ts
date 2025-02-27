@@ -27,7 +27,7 @@ export class AgentController {
         return this.agentService.setPasword(input)
     }
 
-    //to get all users
+    //to get all agents
     @Get()
     findAll(){
         return this.agentService.findAll()

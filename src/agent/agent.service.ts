@@ -79,7 +79,7 @@ export class AgentService {
             throw new BadRequestException('Failed to send OTP via Email')
         }
 
-        return {message: 'Agent registered successfully, OPT sent', opt: otpCode}
+        return {message: 'Agent registered successfully, OPT sent'}
     }
 
 
