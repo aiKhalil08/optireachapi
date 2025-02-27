@@ -62,9 +62,7 @@ export class AgentService {
                 from: this.twilioPhone,
                 to: createAgentDto.phoneNumber
             });
-            console.log('Twilio Response:', response);
         }catch(error){
-            console.error('Twilio Error:', error); // Log the actual Twilio error
             throw new BadRequestException(`Twilio Error: ${error.message}`);
         }
 

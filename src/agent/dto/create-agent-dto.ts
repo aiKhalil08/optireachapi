@@ -14,7 +14,6 @@ export class CreateAgentDto{
 
     @IsString()
     @Transform(({ value }) => {
-        console.log("Raw input before transformation:", value); // Debugging
         value = value.trim(); // Remove extra spaces
 
         // validate manually before transforming
