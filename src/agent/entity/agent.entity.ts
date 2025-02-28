@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany, BeforeUpdate } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany, BeforeUpdate, Index } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Otp } from './otp.entity';
 
@@ -7,11 +7,15 @@ export class Agent {
   @PrimaryGeneratedColumn('uuid') // Generates a unique UUID for each agent
   id: string;
 
-  @Column()
+  @Column({nullable: true})
   name: string;
 
   @Column({ unique: true })
   email: string;
+
+  @Column({unique: true,nullable: true})
+  @Index()
+  phoneNumber: string;
 
   @Column({ unique: true })
   bvn: string;

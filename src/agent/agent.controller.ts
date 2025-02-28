@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateAgentDto } from './dto/create-agent-dto';
 import { AgentService } from './agent.service';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SetPasswordDto } from './dto/set-password.dto';
-import { AgentLoginDto } from './dto/agent-login.dto';
 
 @Controller('agent')
 export class AgentController {
@@ -11,6 +10,7 @@ export class AgentController {
     constructor(private readonly agentService: AgentService){}
     //route to register an agent
     @Post('register')
+    @UsePipes(new ValidationPipe({transform: true}))
     createAgent(@Body() input: CreateAgentDto){
         return this.agentService.createAgent(input)
     }
@@ -27,7 +27,7 @@ export class AgentController {
         return this.agentService.setPasword(input)
     }
 
-    //to get all users
+    //to get all agents
     @Get()
     findAll(){
         return this.agentService.findAll()
