@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AgentsModule } from './agents/agents.module';
 import { Agent } from './agents/entities/agent.entity';
 
@@ -10,7 +10,7 @@ import { Agent } from './agents/entities/agent.entity';
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-        type: 'mssql',
+        type: process.env.DB_TYPE,
         host: process.env.DB_HOST,
         port: +<string>process.env.DB_PORT,
         username: process.env.DB_USERNAME,
@@ -21,8 +21,8 @@ import { Agent } from './agents/entities/agent.entity';
         options: {
             trustServerCertificate: true,
             encrypt: true
-        }
-    }),
+        },
+    } as TypeOrmModuleOptions),
     AgentsModule
   ],
   controllers: [AppController],
