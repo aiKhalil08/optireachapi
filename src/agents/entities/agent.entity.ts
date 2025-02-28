@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Agent {
@@ -11,6 +11,18 @@ export class Agent {
     @Column({length: 30})
     lastName: string;
 
-    @Column({length: 55})
+    @Column({length: 65, unique: true})
     email: string;
+
+    @Column({length: 14})
+    phoneNumber: string;
+
+    @Column({length: 11})
+    bvn: string;
+
+    @Column({nullable: true})
+    password: string;
+
+    @CreateDateColumn({nullable: true})
+    createdAt: Date;
 }
