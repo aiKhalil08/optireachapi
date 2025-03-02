@@ -7,6 +7,16 @@ import { AgentsModule } from './agents/agents.module';
 import { Agent } from './agents/entities/agent.entity';
 import { AgentOtp } from './agents/entities/agentOtp.entity';
 import { AuthModule } from './auth/auth.module';
+import { MaritalStatusesModule } from './marital-statuses/marital-statuses.module';
+import { GendersModule } from './genders/genders.module';
+import { LocationsModule } from './locations/locations.module';
+import { CustomersModule } from './customers/customers.module';
+import { Customer } from './customers/entities/customer.entity';
+import { CustomerProfile } from './customers/entities/customerProfile.entity';
+import { Gender } from './genders/entities/gender.entity';
+import { MaritalStatus } from './marital-statuses/entities/marital-status.entity';
+import { State } from './locations/entities/state.entity';
+import { LGA } from './locations/entities/lga.entity';
 
 @Module({
   imports: [
@@ -18,7 +28,7 @@ import { AuthModule } from './auth/auth.module';
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        entities: [Agent, AgentOtp],
+        entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA],
         synchronize: true,
         options: {
             trustServerCertificate: true,
@@ -26,7 +36,11 @@ import { AuthModule } from './auth/auth.module';
         },
     } as TypeOrmModuleOptions),
     AgentsModule,
-    AuthModule
+    AuthModule,
+    CustomersModule,
+    LocationsModule,
+    GendersModule,
+    MaritalStatusesModule
   ],
   controllers: [AppController],
   providers: [AppService],
