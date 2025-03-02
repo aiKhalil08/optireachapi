@@ -11,5 +11,6 @@ import { LGA } from './entities/lga.entity';
     ],
     controllers: [LocationsController],
     providers: [LocationsService],
+    exports: [TypeOrmModule.forFeature([State, LGA])]
 })
 export class LocationsModule {}

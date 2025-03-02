@@ -19,16 +19,16 @@ export class CustomerProfile {
     @Column({length: 100})
     motherMaidenName: string;
 
-    @ManyToOne(() => Gender, (gender) => gender.customerProfiles)
+    @ManyToOne(() => Gender, (gender) => gender.customerProfiles, {cascade: true})
     gender: Gender;
 
-    @ManyToOne(() => MaritalStatus, (maritalStatus) => maritalStatus.customerProfiles)
+    @ManyToOne(() => MaritalStatus, (maritalStatus) => maritalStatus.customerProfiles, {cascade: true})
     maritalStatus: MaritalStatus;
 
-    @ManyToOne(() => State, (state) => state.customerProfiles)
+    @ManyToOne(() => State, (state) => state.customerProfiles, {cascade: true})
     stateOfOrigin: State;
 
-    @ManyToOne(() => LGA, (lga) => lga.customerProfiles)
+    @ManyToOne(() => LGA, (lga) => lga.customerProfiles, {cascade: true})
     lga: LGA;
 
     @OneToOne(() => Customer, customer => customer.profile)

@@ -10,5 +10,6 @@ import { MaritalStatus } from './entities/marital-status.entity';
     ],
     controllers: [MaritalStatusesController],
     providers: [MaritalStatusesService],
+    exports: [TypeOrmModule.forFeature([MaritalStatus])]
 })
 export class MaritalStatusesModule {}

@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CustomerProfile } from "./customerProfile.entity";
+import { Account } from "src/accounts/entities/account.entity";
 
 @Entity()
 export class Customer {
@@ -21,12 +22,13 @@ export class Customer {
     @Column({length: 14, unique: true})
     phoneNumber: string;
 
-    @Column({length: 11, unique: true})
-    bvn: string;
-
     @CreateDateColumn()
     createdAt: Date;
 
-    @OneToOne(() => CustomerProfile, profile => profile.customer)
+    @OneToOne(() => CustomerProfile, profile => profile.customer, {cascade: true})
     profile: CustomerProfile;
+
+    @OneToOne(() => Account, account => account.customer)
+    @JoinColumn()
+    account: Account;
 }

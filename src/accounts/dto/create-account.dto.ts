@@ -1,12 +1,12 @@
-import { IsDateString, IsNotEmpty, IsString, Matches, Max, MaxLength } from "class-validator";
+import { IsDateString, IsNotEmpty, IsOptional, IsString, Matches, Max, MaxLength } from "class-validator";
 
-export class CreateCustomerDto {
+export class CreateAccountDto {
     @IsNotEmpty()
     @IsString()
     @MaxLength(25)
     firstName: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @MaxLength(30)
     middleName: string;

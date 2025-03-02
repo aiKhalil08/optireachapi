@@ -17,6 +17,8 @@ import { Gender } from './genders/entities/gender.entity';
 import { MaritalStatus } from './marital-statuses/entities/marital-status.entity';
 import { State } from './locations/entities/state.entity';
 import { LGA } from './locations/entities/lga.entity';
+import { AccountsModule } from './accounts/accounts.module';
+import { Account } from './accounts/entities/account.entity';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { LGA } from './locations/entities/lga.entity';
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA],
+        entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA, Account],
         synchronize: true,
         options: {
             trustServerCertificate: true,
@@ -40,7 +42,8 @@ import { LGA } from './locations/entities/lga.entity';
     CustomersModule,
     LocationsModule,
     GendersModule,
-    MaritalStatusesModule
+    MaritalStatusesModule,
+    AccountsModule
   ],
   controllers: [AppController],
   providers: [AppService],
