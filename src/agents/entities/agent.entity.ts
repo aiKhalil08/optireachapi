@@ -1,9 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { AgentOtp } from "./agentOtp.entity";
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class Agent {
     @PrimaryGeneratedColumn("uuid")
-    id: number;
+    id: string;
 
     @Column({length: 25})
     firstName: string;
@@ -14,15 +16,24 @@ export class Agent {
     @Column({length: 65, unique: true})
     email: string;
 
-    @Column({length: 14})
+    @Column({length: 14, unique: true})
     phoneNumber: string;
 
-    @Column({length: 11})
+    @Column({length: 11, unique: true})
     bvn: string;
 
     @Column({nullable: true})
     password: string;
 
+    @Column({default: false, nullable: true})
+    emailVerified: boolean;
+
+    @Column({default: false, nullable: true})
+    phoneVerified: boolean;
+
     @CreateDateColumn({nullable: true})
     createdAt: Date;
+
+    @OneToMany(() => AgentOtp, (otp) => otp.agent, {cascade: true})
+    otps: AgentOtp[]
 }

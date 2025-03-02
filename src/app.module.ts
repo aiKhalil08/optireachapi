@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AgentsModule } from './agents/agents.module';
 import { Agent } from './agents/entities/agent.entity';
+import { AgentOtp } from './agents/entities/agentOtp.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,15 +17,16 @@ import { Agent } from './agents/entities/agent.entity';
         port: +<string>process.env.DB_PORT,
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
-        entities: [Agent],
+        database: process.env.DB_NAME,
+        entities: [Agent, AgentOtp],
         synchronize: true,
         options: {
             trustServerCertificate: true,
             encrypt: true
         },
     } as TypeOrmModuleOptions),
-    AgentsModule
+    AgentsModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
