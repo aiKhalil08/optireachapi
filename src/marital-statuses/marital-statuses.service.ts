@@ -1,15 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMaritalStatusDto } from './dto/create-marital-status.dto';
 import { UpdateMaritalStatusDto } from './dto/update-marital-status.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { MaritalStatus } from './entities/marital-status.entity';
 
 @Injectable()
 export class MaritalStatusesService {
+
+  constructor(
+    @InjectRepository(MaritalStatus)
+    private maritalstatusesReposirory: Repository<MaritalStatus>
+  ){}
+
   create(createMaritalStatusDto: CreateMaritalStatusDto) {
     return 'This action adds a new maritalStatus';
   }
 
   findAll() {
-    return `This action returns all maritalStatuses`;
+    return this.maritalstatusesReposirory.find({
+      select: ['id','name']
+    });
   }
 
   findOne(id: number) {
