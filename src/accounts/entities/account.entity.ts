@@ -1,5 +1,6 @@
 import { Customer } from "src/customers/entities/customer.entity";
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Transaction } from "src/transactions/entities/transaction.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Account {
@@ -23,4 +24,7 @@ export class Account {
 
     @UpdateDateColumn()
     lastTransactionAt: Date;
+
+    @OneToMany(() => Transaction, transaction => transaction.account)
+    transactions: Transaction[];
 }

@@ -19,6 +19,10 @@ import { State } from './locations/entities/state.entity';
 import { LGA } from './locations/entities/lga.entity';
 import { AccountsModule } from './accounts/accounts.module';
 import { Account } from './accounts/entities/account.entity';
+import { TransactionsModule } from './transactions/transactions.module';
+import { TransactionClass } from './transactions/entities/transactionClass.entity';
+import { TransactionType } from './transactions/entities/transactionType';
+import { Transaction } from './transactions/entities/transaction.entity';
 
 @Module({
   imports: [
@@ -26,11 +30,11 @@ import { Account } from './accounts/entities/account.entity';
     TypeOrmModule.forRoot({
         type: process.env.DB_TYPE,
         host: process.env.DB_HOST,
-        port: +<string>process.env.DB_PORT,
+        port: Number(process.env.DB_PORT),
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA, Account],
+        entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA, Account, Transaction, TransactionClass, TransactionType],
         synchronize: true,
         options: {
             trustServerCertificate: true,
@@ -43,7 +47,8 @@ import { Account } from './accounts/entities/account.entity';
     LocationsModule,
     GendersModule,
     MaritalStatusesModule,
-    AccountsModule
+    AccountsModule,
+    TransactionsModule
   ],
   controllers: [AppController],
   providers: [AppService],
