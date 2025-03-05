@@ -1,6 +1,7 @@
+import { Agent } from "src/agents/entities/agent.entity";
 import { Transaction } from "src/transactions/entities/transaction.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Agent } from "./agent.entity";
+
 
 
 @Entity()

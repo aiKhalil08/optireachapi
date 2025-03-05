@@ -1,9 +1,9 @@
 import { Account } from "src/accounts/entities/account.entity";
-import { Agent } from "src/agents/entities/agent.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TransactionClass } from "./transactionClass.entity";
 import { TransactionType } from "./transactionType";
-import { AgentAccount } from "src/agents/entities/agentAccount,entity";
+import { AgentAccount } from "src/agents-account/entities/agentAccount.entity";
+
 
 @Entity()
 export class Transaction {

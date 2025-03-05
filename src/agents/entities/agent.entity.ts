@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { AgentOtp } from "./agentOtp.entity";
-import { AgentAccount } from "./agentAccount,entity";
+import { AgentAccount } from "src/agents-account/entities/agentAccount.entity";
+
 
 @Entity()
 export class Agent {
