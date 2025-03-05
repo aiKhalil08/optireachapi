@@ -29,6 +29,5 @@ export class Customer {
     profile: CustomerProfile;
 
     @OneToOne(() => Account, account => account.customer)
-    @JoinColumn()
     account: Account;
 }

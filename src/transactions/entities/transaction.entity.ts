@@ -16,8 +16,8 @@ export class Transaction {
     @Column({type: 'text', nullable: true})
     narration: string;
 
-    @Column({type: 'json'})
-    details: JSON;
+    @Column({type: 'jsonb'})
+    details: Record<string, any>;
 
     @CreateDateColumn()
     createdAt: Date;

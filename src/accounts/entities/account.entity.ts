@@ -1,6 +1,6 @@
 import { Customer } from "src/customers/entities/customer.entity";
 import { Transaction } from "src/transactions/entities/transaction.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Account {
@@ -17,6 +17,7 @@ export class Account {
     balance: number;
 
     @OneToOne(() => Customer, customer => customer.account, {cascade: true})
+    @JoinColumn()
     customer: Customer;
 
     @CreateDateColumn()
