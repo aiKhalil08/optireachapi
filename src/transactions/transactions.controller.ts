@@ -7,9 +7,14 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
-  @Post()
+  @Post('withdraw')
   createWithdraw(@Body() createTransactionDto: CreateTransactionDto) {
     return this.transactionsService.createWithdraw(createTransactionDto);
+  }
+
+  @Post('deposite')
+  createDeposite(@Body() createTransactionDto: CreateTransactionDto){
+    return this.transactionsService.createDeposite(createTransactionDto);
   }
 
   @Get()

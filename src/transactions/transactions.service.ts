@@ -13,23 +13,6 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class TransactionsService {
 
-  // constructor(
-  //   @InjectRepository(Transaction)
-  //   private transactionRepository: Repository<Transaction>,
-
-  //   @InjectRepository(TransactionClass)
-  //   private transactionClassRepository: Repository<TransactionClass>,
-
-  //   @InjectRepository(TransactionType)
-  //   private transactionTypeRepository: Repository<TransactionType>,
-
-  //   @InjectRepository(Account)
-  //   private accountRepository: Repository<Account>,
-
-  //   @InjectRepository(AgentAccount)
-  //   private agentAccountRepository: Repository<AgentAccount>
-  // ){}
-
   constructor(
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
@@ -50,6 +33,7 @@ export class TransactionsService {
     private dataSource: DataSource
   ) {}
 
+  //function to withdraw money
   async createWithdraw(createTransactionDto: CreateTransactionDto) {
     // Start a database transaction
     const queryRunner = this.dataSource.createQueryRunner();
@@ -149,7 +133,109 @@ export class TransactionsService {
         // Always release the query runner
         await queryRunner.release();
     }
-}
+  }
+
+  async createDeposite(createTransactionDto: CreateTransactionDto){
+    // Start a database transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+
+
+    // Establish a connection and begin the transaction
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+        // Find customer account using the query runner's manager
+        const existingCustomerAccount = await queryRunner.manager.findOne(Account, { 
+            where: { accountNumber: createTransactionDto.customerAccount }
+        });
+
+        // Checking if the customer has an account
+        if (!existingCustomerAccount) {
+            throw new NotFoundException("Account does not exist");
+        }
+
+        // Find agent account using the query runner's manager
+        const existingAgentAccount = await queryRunner.manager.findOne(AgentAccount, { 
+            where: { accountNumber: createTransactionDto.agentAccount }
+        });
+
+        if (!existingAgentAccount) {
+            throw new NotFoundException("Agent account does not exist");
+        }
+
+        
+        // Checking if the agent has enough cash to withdraw
+        if (existingAgentAccount.balance < createTransactionDto.amount) {
+            throw new BadRequestException("Insufficient balance to perform the deposite ");
+        }
+
+        // Fetch Transaction Class (Credit) using query runner's manager
+        const transactionClass = await queryRunner.manager.findOne(TransactionClass, {
+            where: { name: 'Credit' }
+        });
+
+        if (!transactionClass) {
+            throw new NotFoundException("Transaction class not found");
+        }
+
+        // Fetch Transaction Type (Withdrawal) using query runner's manager
+        const transactionType = await queryRunner.manager.findOne(TransactionType, {
+            where: { name: 'Deposit' }
+        });
+
+        if (!transactionType) {
+            throw new NotFoundException("Transaction type not found");
+        }
+
+        // Add the fee to the agent account
+        existingAgentAccount.balance -= createTransactionDto.amount;
+
+        // Deduct the transaction amount and fee from the customer account
+        existingCustomerAccount.balance += createTransactionDto.amount;
+        
+        
+
+        // Save updated accounts using query runner's manager
+        await queryRunner.manager.save(existingAgentAccount);
+        await queryRunner.manager.save(existingCustomerAccount);
+       
+
+        // Create and save the transaction using query runner's manager
+        const transaction = new Transaction();
+        transaction.amount = createTransactionDto.amount;
+        transaction.account = existingCustomerAccount;
+        transaction.agentAccount = existingAgentAccount;
+        transaction.transactionType = transactionType;
+        transaction.transactionClass = transactionClass;
+        transaction.details = {
+            amount: createTransactionDto.amount,
+            totalAmountDeducted: createTransactionDto.amount,
+            customerAccount: existingCustomerAccount.accountNumber,
+            agentAccount: existingAgentAccount.accountNumber,
+        };
+   
+        await queryRunner.manager.save(transaction);
+
+        // If all operations are successful, commit the transaction
+        await queryRunner.commitTransaction();
+
+        return transaction;
+    } catch (error) {
+        // If any error occurs, roll back the transaction
+        await queryRunner.rollbackTransaction();
+        
+        // Re-throw the error to be handled by the global exception filter
+        throw error;
+    } finally {
+        // Always release the query runner
+        await queryRunner.release();
+    }
+
+  }
+
+
+
   findAll() {
     return `This action returns all transactions`;
   }

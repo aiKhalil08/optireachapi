@@ -13,7 +13,15 @@ export class Account {
     @Column({length: 11, unique: true})
     bvn: string;
 
-    @Column({type: 'decimal', precision: 10, scale: 2})
+    @Column({
+    type: 'decimal', 
+    precision: 10, 
+    scale: 2, // Keep 2 decimal places
+    transformer: {
+        to: (value: number) => value, // Keep the original value
+        from: (value: any) => Number(value) // Ensure it's a number
+    }
+    })
     balance: number;
 
     @OneToOne(() => Customer, customer => customer.account, {cascade: true})
