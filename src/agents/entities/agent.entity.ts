@@ -1,6 +1,6 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { AgentOtp } from "./agentOtp.entity";
-import { Transaction } from "src/transactions/entities/transaction.entity";
+import { AgentAccount } from "./agentAccount,entity";
 
 @Entity()
 export class Agent {
@@ -37,6 +37,7 @@ export class Agent {
     @OneToMany(() => AgentOtp, (otp) => otp.agent, {cascade: true})
     otps: AgentOtp[]
 
-    @OneToMany(() => Transaction, (transaction) => transaction.agent)
-    transactions: Transaction[];
+    @OneToOne(() => AgentAccount, (agentaccount) => agentaccount.agent)
+    agentAccount: AgentAccount;
+
 }

@@ -3,6 +3,7 @@ import { Agent } from "src/agents/entities/agent.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TransactionClass } from "./transactionClass.entity";
 import { TransactionType } from "./transactionType";
+import { AgentAccount } from "src/agents/entities/agentAccount,entity";
 
 @Entity()
 export class Transaction {
@@ -20,9 +21,9 @@ export class Transaction {
 
     @CreateDateColumn()
     createdAt: Date;
-
-    @ManyToOne(() => Agent, agent => agent.transactions)
-    agent: Agent;
+    
+    @ManyToOne(() => AgentAccount, (agentaccount) => agentaccount.transactions)
+    agentAccount: AgentAccount;
 
     @ManyToOne(() => Account, account => account.transactions)
     account: Account;
