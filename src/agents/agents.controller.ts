@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
@@ -31,6 +31,7 @@ export class AgentsController {
     }
 
   // @Get()
+  
   // findAll() {
   //   return this.agentsService.findAll();
   // }
@@ -41,8 +42,8 @@ export class AgentsController {
   // }
 
   //get all agent transactions
-  @Get(':agentId/transactions') // Use :agentId as the route parameter
-  findAgentTransaction(@Param('agentId') agentId: string) { // Access it as agentId
+  @Get(':transactions') // Use :agentId as the route parameter
+  findAgentTransaction(@Query('agentId') agentId: string) { // Access it as agentId
       return this.agentsService.findAgentTransactions(agentId);
   }
 
