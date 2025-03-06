@@ -17,9 +17,9 @@ export class UtilityPaymentDto {
     @IsNotEmpty()
     amount: number; 
 
-    @IsEnum(['Airtime', 'Data', 'Bills'])
+    @IsEnum(['Airtime', 'Data', 'Bills','Electricity', 'TV', 'BetWallet'])
     @IsNotEmpty()
-    paymentType: 'Airtime' | 'Data' | 'Bills'; // Type of utility payment
+    paymentType: 'Airtime' | 'Data' | 'Bills'| 'Electricity'| 'TV'| 'BetWallet'; // Type of utility payment
 
     @IsString()
     @IsNotEmpty()

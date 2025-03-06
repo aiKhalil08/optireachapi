@@ -462,8 +462,10 @@ export class TransactionsService {
 
 
 
-  findAll() {
-    return `This action returns all transactions`;
+  async findAll() {
+    // const agentTransactions = await 
+
+    // return `This action returns all transactions`;
   }
 
   findOne(id: number) {

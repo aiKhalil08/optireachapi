@@ -11,6 +11,8 @@ import { VerifyEmailDto } from './dto/verify-email-dto';
 import { VerifyPhoneDto } from './dto/verify-phone-dto';
 import { SetPasswordDto } from './dto/set-password.dto';
 import * as bcrypt from 'bcrypt';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { AgentAccount } from 'src/agents-account/entities/agentAccount.entity';
 
 const RANDOMFIRSTNAMES = ['Tayo', 'Musa', 'Ifeanyi'];
 const RANDOMLASTNAMES = ['Jide', 'Bala', 'Chukwuemeka'];
@@ -23,6 +25,12 @@ export class AgentsService {
 
         @InjectRepository(AgentOtp)
         private agentOtpRepository: Repository<AgentOtp>,
+
+        // @InjectRepository(Transaction)
+        // private agentTransactionRepository: Repository<Transaction>,
+
+        // @InjectRepository(AgentAccount)
+        // private agentAccountRepository: Repository<AgentAccount>
     ) {}
 
     async create(createAgentDto: CreateAgentDto): Promise<Agent> {
@@ -148,6 +156,25 @@ export class AgentsService {
 
     findOne(id: number) {
         return `This action returns a #${id} agent`;
+    }
+
+    //function to find all the transactions for a single agent
+    async findAgentTransactions(agentId: string) {
+        const agent = await this.agentRepository.findOne({
+            where: { id: agentId }, // Find the agent by ID
+            relations: ['agentAccount', 'agentAccount.transactions'], // Include related entities
+        });
+
+        if (!agent) {
+            throw new NotFoundException('Agent not found');
+        }
+
+        if (!agent.agentAccount) {
+            throw new NotFoundException('Agent account not found');
+        }
+
+        // Return the transactions associated with the agent's account
+        return agent.agentAccount.transactions;
     }
 
     update(id: number, updateAgentDto: UpdateAgentDto) {

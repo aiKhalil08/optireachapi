@@ -30,14 +30,20 @@ export class AgentsController {
         return this.agentsService.setPassword(setPasswordDto);
     }
 
-  @Get()
-  findAll() {
-    return this.agentsService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.agentsService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.agentsService.findOne(+id);
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.agentsService.findOne(+id);
+  // }
+
+  //get all agent transactions
+  @Get(':agentId/transactions') // Use :agentId as the route parameter
+  findAgentTransaction(@Param('agentId') agentId: string) { // Access it as agentId
+      return this.agentsService.findAgentTransactions(agentId);
   }
 
   @Patch(':id')
