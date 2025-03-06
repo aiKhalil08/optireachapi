@@ -25,6 +25,8 @@ import { TransactionType } from './transactions/entities/transactionType';
 import { Transaction } from './transactions/entities/transaction.entity';
 import { AgentsAccountModule } from './agents-account/agents-account.module';
 import { AgentAccount } from './agents-account/entities/agentAccount.entity';
+import { TransferAccounts } from './transactions/entities/transfer-accounts.entity';
+import { Banks } from './transactions/entities/banks.entity';
 
 @Module({
   imports: [
@@ -36,7 +38,9 @@ import { AgentAccount } from './agents-account/entities/agentAccount.entity';
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA, Account, Transaction, TransactionClass, TransactionType,AgentAccount ],
+        entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA, Account, Transaction, TransactionClass, TransactionType,AgentAccount,
+                  TransferAccounts,Banks
+         ],
         synchronize: true,
         options: {
             trustServerCertificate: true,

@@ -1,8 +1,9 @@
 import { Account } from "src/accounts/entities/account.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TransactionClass } from "./transactionClass.entity";
 import { TransactionType } from "./transactionType";
 import { AgentAccount } from "src/agents-account/entities/agentAccount.entity";
+import { TransferAccounts } from "./transfer-accounts.entity";
 
 
 @Entity()
@@ -27,6 +28,9 @@ export class Transaction {
 
     @ManyToOne(() => Account, account => account.transactions)
     account: Account;
+
+    @ManyToOne(() => TransferAccounts, transferaccount => transferaccount.transactions)
+    transferAccount: TransferAccounts;
 
     @ManyToOne(() => TransactionClass, transactionClass => transactionClass.transactions)
     transactionClass: TransactionClass;
