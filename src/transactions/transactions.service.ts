@@ -12,6 +12,7 @@ import { DataSource } from 'typeorm';
 import { TransferAccounts } from './entities/transfer-accounts.entity';
 import { Banks } from './entities/banks.entity';
 import { CreateTransferDto } from './dto/create-transfer.dto';
+import { UtilityPaymentDto } from './dto/utility-payment.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -59,7 +60,7 @@ export class TransactionsService {
 
         // Checking if the customer has an account
         if (!existingCustomerAccount) {
-            throw new NotFoundException("Account does not exist");
+            throw new NotFoundException("Agent account does not exist");
         }
 
         // Calculate fee as 0.5% of the withdrawal amount
@@ -254,11 +255,6 @@ export class TransactionsService {
     await queryRunner.startTransaction();
 
     try{
-        //find if sender's account exist
-        const existingSenderAccount = await queryRunner.manager.findOne(Account,{
-          where: {accountNumber: createTransferDto.senderAccount}
-        })
-
         // Find agent account using the query runner's manager
         const existingAgentAccount = await queryRunner.manager.findOne(AgentAccount, { 
             where: { accountNumber: createTransferDto.agentAccount }
@@ -268,6 +264,10 @@ export class TransactionsService {
             throw new NotFoundException("Agent account does not exist");
         }
 
+        //find if sender's account exist
+        const existingSenderAccount = await queryRunner.manager.findOne(Account,{
+          where: {accountNumber: createTransferDto.senderAccount}
+        })
 
         //checking if the sender has an account
         if(!existingSenderAccount){
@@ -347,6 +347,113 @@ export class TransactionsService {
     catch(error){
       await queryRunner.rollbackTransaction();
 
+      throw error;
+    }finally{
+      await queryRunner.release();
+    }
+  }
+
+  async createUtilities(utilityPaymentDto: UtilityPaymentDto){
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try{
+      const existingAgentAccount = await queryRunner.manager.findOne(AgentAccount,{
+        where: {accountNumber: utilityPaymentDto.agentAccount}
+      })
+
+      if (!existingAgentAccount) {
+            throw new NotFoundException("Agent account does not exist");
+        }
+
+      //find if sender's account exist
+      const existingCustomerAccount = await queryRunner.manager.findOne(Account,{
+        where: {accountNumber: utilityPaymentDto.customerAccount}
+      })
+
+      //checking if the sender has an account
+      if(!existingCustomerAccount){
+        throw new NotFoundException("Account does not exist");
+      }
+
+      //calculating fee 
+        const feeAmount = utilityPaymentDto.amount * 0.005;
+
+        const totalAmountNeeded = feeAmount + utilityPaymentDto.amount;
+        
+        // Checking if the customer has enough cash to withdraw
+        if (existingCustomerAccount.balance < totalAmountNeeded) {
+            throw new BadRequestException("Insufficient balance to perform the withdrawal (includes 0.5% fee)");
+        }
+
+        // Fetch Transaction Class (Debit) using query runner's manager
+        const transactionClass = await queryRunner.manager.findOne(TransactionClass, {
+            where: { name: 'Debit' }
+        });
+
+        if (!transactionClass) {
+            throw new NotFoundException("Transaction class not found");
+        }
+
+        // Fetch Transaction Type (Withdrawal) using query runner's manager
+        const transactionType = await queryRunner.manager.findOne(TransactionType, {
+            where: { name: utilityPaymentDto.paymentType }
+        });
+
+        if (!transactionType) {
+            throw new NotFoundException("Transaction type not found");
+        }
+
+        //handling the utility type
+        let paymentResponse: any = {};
+
+        if (utilityPaymentDto.paymentType ===  transactionType.name) {
+            paymentResponse = {
+            message: `${transactionType.name} payment of ₦${utilityPaymentDto.amount} was successful`,
+            };
+        } 
+        else {
+            throw new BadRequestException("Invalid payment type");
+        }
+
+        existingCustomerAccount.balance -= totalAmountNeeded;
+
+        existingAgentAccount.balance += feeAmount;
+
+         // Save updated accounts using query runner's manager
+        await queryRunner.manager.save(existingCustomerAccount);
+        await queryRunner.manager.save(existingAgentAccount);
+
+        
+      // Store transaction details with simulated response
+      const transaction = new Transaction();
+      transaction.amount = utilityPaymentDto.amount;
+      transaction.account = existingCustomerAccount;
+      transaction.agentAccount = existingAgentAccount;
+      transaction.transactionType = transactionType;
+      transaction.transactionClass = transactionClass;
+      transaction.details = {
+          feePercentage: 0.5,
+          feeAmount: feeAmount,
+          totalAmountDeducted: totalAmountNeeded,
+          customerAccount: existingCustomerAccount.accountNumber,
+          agentAccount: existingAgentAccount.accountNumber,
+          paymentType: utilityPaymentDto.paymentType,
+          response: paymentResponse // Storing simulated response
+      };
+
+      // Save the transaction
+      await queryRunner.manager.save(transaction);
+
+      await queryRunner.commitTransaction();
+
+      return transaction;
+
+    }catch(error){
+      
+      await queryRunner.rollbackTransaction();
       throw error;
     }finally{
       await queryRunner.release();

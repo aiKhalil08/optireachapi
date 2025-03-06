@@ -3,6 +3,7 @@ import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { CreateTransferDto } from './dto/create-transfer.dto';
+import { UtilityPaymentDto } from './dto/utility-payment.dto';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -21,6 +22,11 @@ export class TransactionsController {
   @Post('transfer')
   createTransfer(@Body() createTransferDto: CreateTransferDto){
     return this.transactionsService.createTransfer(createTransferDto);
+  }
+
+  @Post('utilities')
+  createUtilities(@Body() utilityPaymentDto: UtilityPaymentDto){
+    return this.transactionsService.createUtilities(utilityPaymentDto);
   }
 
   @Get()
