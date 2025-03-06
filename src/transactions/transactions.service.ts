@@ -9,6 +9,9 @@ import { TransactionType } from './entities/transactionType';
 import { Account } from 'src/accounts/entities/account.entity';
 import { AgentAccount } from 'src/agents-account/entities/agentAccount.entity';
 import { DataSource } from 'typeorm';
+import { TransferAccounts } from './entities/transfer-accounts.entity';
+import { Banks } from './entities/banks.entity';
+import { CreateTransferDto } from './dto/create-transfer.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -28,6 +31,12 @@ export class TransactionsService {
 
     @InjectRepository(TransactionType)
     private readonly transactionTypeRepository: Repository<TransactionType>,
+
+    @InjectRepository(TransferAccounts)
+    private readonly transferAccountRepository: Repository<TransferAccounts>,
+
+    @InjectRepository(Banks)
+    private readonly banksRepository: Repository<Banks>,
 
     @InjectDataSource() 
     private dataSource: DataSource
@@ -135,6 +144,7 @@ export class TransactionsService {
     }
   }
 
+  //function to deposite money
   async createDeposite(createTransactionDto: CreateTransactionDto){
     // Start a database transaction
     const queryRunner = this.dataSource.createQueryRunner();
@@ -232,6 +242,115 @@ export class TransactionsService {
         await queryRunner.release();
     }
 
+  }
+
+  async createTransfer(createTransferDto: CreateTransferDto){
+    // Start a database transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+
+
+    // Establish a connection and begin the transaction
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try{
+        //find if sender's account exist
+        const existingSenderAccount = await queryRunner.manager.findOne(Account,{
+          where: {accountNumber: createTransferDto.senderAccount}
+        })
+
+        // Find agent account using the query runner's manager
+        const existingAgentAccount = await queryRunner.manager.findOne(AgentAccount, { 
+            where: { accountNumber: createTransferDto.agentAccount }
+        });
+
+        if (!existingAgentAccount) {
+            throw new NotFoundException("Agent account does not exist");
+        }
+
+
+        //checking if the sender has an account
+        if(!existingSenderAccount){
+          throw new NotFoundException("Account does not exist");
+        }
+
+        //calculating fee 
+        const feeAmount = createTransferDto.amount * 0.005;
+
+        const totalAmountNeeded = feeAmount + createTransferDto.amount;
+        
+        // Checking if the customer has enough cash to withdraw
+        if (existingSenderAccount.balance < totalAmountNeeded) {
+            throw new BadRequestException("Insufficient balance to perform the withdrawal (includes 0.5% fee)");
+        }
+
+        //finding the receiver's account
+        const existingReceiverAccount = await queryRunner.manager.findOne(TransferAccounts, 
+          {where: {accountNumber: createTransferDto.receiverAccount}}
+        )
+
+         if(!existingReceiverAccount){
+          throw new NotFoundException("Account does not exist");
+        }
+
+        // Fetch Transaction Class (Debit) using query runner's manager
+        const transactionClass = await queryRunner.manager.findOne(TransactionClass, {
+            where: { name: 'Debit' }
+        });
+
+        if (!transactionClass) {
+            throw new NotFoundException("Transaction class not found");
+        }
+
+        // Fetch Transaction Type (Withdrawal) using query runner's manager
+        const transactionType = await queryRunner.manager.findOne(TransactionType, {
+            where: { name: 'Transfer' }
+        });
+
+        if (!transactionType) {
+            throw new NotFoundException("Transaction type not found");
+        }
+
+        existingSenderAccount.balance -= totalAmountNeeded;
+
+        existingAgentAccount.balance += feeAmount;
+
+         // Save updated accounts using query runner's manager
+        await queryRunner.manager.save(existingSenderAccount);
+        await queryRunner.manager.save(existingAgentAccount);
+
+        // Create and save the transaction using query runner's manager
+        const transaction = new Transaction();
+        transaction.amount = createTransferDto.amount;
+        transaction.account = existingSenderAccount;
+        transaction.agentAccount = existingAgentAccount;
+        transaction.transactionType = transactionType;
+        transaction.transactionClass = transactionClass;
+        transaction.details = {
+            amount: createTransferDto.amount,
+            feePercentage: 0.5,
+            feeAmount: feeAmount,
+            totalAmountDeducted: totalAmountNeeded,
+            senderAccount: existingSenderAccount.accountNumber,
+            agentAccount: existingAgentAccount.accountNumber,
+            receiverAccount: existingReceiverAccount.accountNumber
+        };
+
+        await queryRunner.manager.save(transaction);
+
+        // If all operations are successful, commit the transaction
+        await queryRunner.commitTransaction();
+
+        return transaction;
+
+    }
+    catch(error){
+      await queryRunner.rollbackTransaction();
+
+      throw error;
+    }finally{
+      await queryRunner.release();
+    }
   }
 
 

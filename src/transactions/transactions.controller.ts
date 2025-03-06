@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { CreateTransferDto } from './dto/create-transfer.dto';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -15,6 +16,11 @@ export class TransactionsController {
   @Post('deposite')
   createDeposite(@Body() createTransactionDto: CreateTransactionDto){
     return this.transactionsService.createDeposite(createTransactionDto);
+  }
+
+  @Post('transfer')
+  createTransfer(@Body() createTransferDto: CreateTransferDto){
+    return this.transactionsService.createTransfer(createTransferDto);
   }
 
   @Get()
