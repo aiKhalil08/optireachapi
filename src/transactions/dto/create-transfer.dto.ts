@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 
 
-export class CreateTransactionDto {
+export class CreateTransferDto {
     
     @IsString()
     @IsNotEmpty()
@@ -10,8 +10,13 @@ export class CreateTransactionDto {
 
     @IsString()
     @IsNotEmpty()
-    @Length(10,10)
-    customerAccount: string;
+    @Length(10, 10)
+    senderAccount: string;  // Customer sending money
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(10, 10)
+    receiverAccount: string;  // Customer receiving money
 
     @IsNumber()
     @IsNotEmpty()

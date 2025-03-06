@@ -1,9 +1,9 @@
-import { Customer } from "src/customers/entities/customer.entity";
+import { Agent } from "src/agents/entities/agent.entity";
 import { Transaction } from "src/transactions/entities/transaction.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Account {
+export class AgentAccount{
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -24,9 +24,9 @@ export class Account {
     })
     balance: number;
 
-    @OneToOne(() => Customer, customer => customer.account, {cascade: true})
+    @OneToOne(() => Agent, agent => agent.agentAccount, {cascade: true})
     @JoinColumn()
-    customer: Customer;
+    agent: Agent;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -34,6 +34,6 @@ export class Account {
     @UpdateDateColumn()
     lastTransactionAt: Date;
 
-    @OneToMany(() => Transaction, transaction => transaction.account)
-    transactions: Transaction[];
+    @OneToMany(() => Transaction, transaction => transaction.agentAccount)
+    transactions: Transaction;
 }

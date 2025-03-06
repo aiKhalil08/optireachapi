@@ -1,8 +1,10 @@
 import { Account } from "src/accounts/entities/account.entity";
-import { Agent } from "src/agents/entities/agent.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TransactionClass } from "./transactionClass.entity";
 import { TransactionType } from "./transactionType";
+import { AgentAccount } from "src/agents-account/entities/agentAccount.entity";
+import { TransferAccounts } from "./transfer-accounts.entity";
+
 
 @Entity()
 export class Transaction {
@@ -15,17 +17,20 @@ export class Transaction {
     @Column({type: 'text', nullable: true})
     narration: string;
 
-    @Column({type: 'json'})
-    details: JSON;
+    @Column({type: 'jsonb'})
+    details: Record<string, any>;
 
     @CreateDateColumn()
     createdAt: Date;
-
-    @ManyToOne(() => Agent, agent => agent.transactions)
-    agent: Agent;
+    
+    @ManyToOne(() => AgentAccount, (agentaccount) => agentaccount.transactions)
+    agentAccount: AgentAccount;
 
     @ManyToOne(() => Account, account => account.transactions)
     account: Account;
+
+    @ManyToOne(() => TransferAccounts, transferaccount => transferaccount.transactions)
+    transferAccount: TransferAccounts;
 
     @ManyToOne(() => TransactionClass, transactionClass => transactionClass.transactions)
     transactionClass: TransactionClass;

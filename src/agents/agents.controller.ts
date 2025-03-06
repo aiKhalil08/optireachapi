@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
@@ -30,14 +30,21 @@ export class AgentsController {
         return this.agentsService.setPassword(setPasswordDto);
     }
 
-  @Get()
-  findAll() {
-    return this.agentsService.findAll();
-  }
+  // @Get()
+  
+  // findAll() {
+  //   return this.agentsService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.agentsService.findOne(+id);
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.agentsService.findOne(+id);
+  // }
+
+  //get all agent transactions
+  @Get(':transactions') // Use :agentId as the route parameter
+  findAgentTransaction(@Query('agentId') agentId: string) { // Access it as agentId
+      return this.agentsService.findAgentTransactions(agentId);
   }
 
   @Patch(':id')

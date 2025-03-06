@@ -13,5 +13,8 @@ INSERT INTO transaction_type (name, description) VALUES
 ('Data', 'Purchase of mobile data'),
 ('Airtime', 'Purchase of airtime'),
 ('Bills', 'Payment of bills');
+('Electricity', 'Payment of Electricity bills');
+('TV', 'Payment of TV bills');
+('BetWallet', 'Funding of bet wallet');
 
 CREATE INDEX IF NOT EXISTS idx_transaction_type_name ON transaction_type(name);
