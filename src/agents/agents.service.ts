@@ -26,6 +26,9 @@ export class AgentsService {
         @InjectRepository(AgentOtp)
         private agentOtpRepository: Repository<AgentOtp>,
 
+        @InjectRepository(Transaction)
+        private transactionRepository: Repository<Transaction>
+
         // @InjectRepository(Transaction)
         // private agentTransactionRepository: Repository<Transaction>,
 
@@ -159,34 +162,35 @@ export class AgentsService {
     }
 
     //function to find the last 10 transactions for a single agent
-    async findAgentTransactions(agentId: string) {
-        const agent = await this.agentRepository.findOne({
-            where: { id: agentId },
-        });
-    
-        if (!agent) {
-            throw new NotFoundException('Agent not found');
-        }
-    
-        // Fetch the latest 10 transactions using QueryBuilder
-        const transactions = await this.agentRepository
-            .createQueryBuilder('agent')
-            .leftJoinAndSelect('agent.agentAccount', 'agentAccount')
-            .leftJoinAndSelect('agentAccount.transactions', 'transactions')
-            .where('agent.id = :agentId', { agentId })
-            .orderBy('transactions.createdAt', 'DESC') // Sort by createdAt in descending order
-            .take(10) // Limit to 10 transactions
-            .getMany();
-    
-        if (!transactions.length || !transactions[0].agentAccount) {
-            throw new NotFoundException('Agent account or transactions not found');
-        }
-    
-        return transactions[0].agentAccount.transactions;
+    // Function to find the last 10 transactions for a single agent
+async findAgentTransactions(agentId: string) {
+    // Check if the agent exists
+    const agent = await this.agentRepository.findOne({ where: { id: agentId } });
+
+    if (!agent) {
+        throw new NotFoundException('Agent not found');
     }
 
+    // Fetch the latest 10 transactions directly from the Transaction table
+   const transactions = await this.transactionRepository.find({
+    where: { agent: { id: agentId } },
+    relations: ['agent', 'account', 'transactionType', 'transactionClass'], // Load related data
+    order: { createdAt: 'DESC' }, // Sort by latest transactions
+    take: 10, // Limit to 10 transactions
+    });
+
+
+    if (!transactions.length) {
+        throw new NotFoundException('No transactions found for this agent');
+    }
+
+    return transactions;
+}
+
+
     //function to find all the transactions for a single agent
-    async findAllAgentTransaction(agentId: string){
+    async findAllAgentTransaction(agentId: string, page: number, limit: number){
+         console.log(`Agent ID: ${agentId}, Page: ${page}, Limit: ${limit}`); // Debugging line
         const agent = await this.agentRepository.findOne({
             where: { id: agentId },
         });
@@ -194,6 +198,25 @@ export class AgentsService {
         if (!agent) {
             throw new NotFoundException('Agent not found');
         }
+
+        // Fetch transactions with pagination
+        const [transactions, total] = await this.transactionRepository.findAndCount({
+            where: { agent: { id: agentId } },
+            relations: ['agent', 'account', 'transactionType', 'transactionClass'],
+            order: { createdAt: 'DESC' }, // Sort by latest transactions
+            skip: (page -1) * limit,
+            take: limit,
+        });
+
+        console.log(`Transactions returned: ${transactions.length}`); // Debugging line
+        // Return paginated response
+        return {
+            transactions: transactions,
+            totalTransactions: total,
+            currentPage: page,
+            totalPages: total > 0 ? Math.ceil(total / limit) : 0,
+            pageSize: limit,
+        };
     }
 
     update(id: number, updateAgentDto: UpdateAgentDto) {
