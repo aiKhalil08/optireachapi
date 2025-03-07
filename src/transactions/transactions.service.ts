@@ -170,7 +170,11 @@ export class TransactionsService {
   }
 
   //function to deposite money
-  async createDeposite(createTransactionDto: CreateTransactionDto, agentId: string){
+  async createDeposite(createTransactionDto: CreateTransactionDto, agentId: string, otp: string){
+
+    //Verify OTP before proceeding
+    await this.transactionsOtpService.verifyOtp(otp, createTransactionDto.customerAccount);
+
     // Start a database transaction
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -284,7 +288,11 @@ export class TransactionsService {
   }
 
   //function to transfer money
-  async createTransfer(createTransferDto: CreateTransferDto, agentId: string){
+  async createTransfer(createTransferDto: CreateTransferDto, agentId: string, otp: string){
+
+    //Verify OTP before proceeding
+    await this.transactionsOtpService.verifyOtp(otp, createTransferDto.senderAccount);
+
     // Start a database transaction
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -406,7 +414,11 @@ export class TransactionsService {
   }
 
   //function to implement utility payments
-  async createUtilities(utilityPaymentDto: UtilityPaymentDto, agentId: string){
+  async createUtilities(utilityPaymentDto: UtilityPaymentDto, agentId: string, otp: string){
+
+    //Verify OTP before proceeding
+    await this.transactionsOtpService.verifyOtp(otp, utilityPaymentDto.customerAccount);
+
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
@@ -524,8 +536,6 @@ export class TransactionsService {
       await queryRunner.release();
     }
   }
-
-
 
   async findAll() {
     // const agentTransactions = await 
