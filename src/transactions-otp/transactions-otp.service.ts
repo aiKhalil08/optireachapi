@@ -54,4 +54,21 @@ export class TransactionsOtpService {
         
         return {message: "Otp sent"}
     }
+
+    //function to verify otp
+    async verifyOtp(otp){
+
+        const otpRecord = await this.transactionOtpRepository.findOne({
+            where: {token: otp, isUsed: false},
+            relations : ['customer']
+        });
+
+        if(!otpRecord || otpRecord.expiresAt.getTime() < Date.now()){
+            throw new BadRequestException('Invalid or expired OTP')
+        }
+
+        otpRecord.isUsed = true;
+        await this.transactionOtpRepository.save(otpRecord)
+
+    }
 }

@@ -8,16 +8,12 @@ export class TransactionsOtpController {
     ){}
 
     @Post('generate')
-    generateOtp(
-        @Body('accountNumber') accountNumber: string,
-    ){
+    generateOtp(@Body('accountNumber') accountNumber: string,){
         return this.transactionOtpService.generateOtp(accountNumber);
     }
 
     @Post('verify')
-    verifyOtp(
-        @Body('otp') otp: string
-    ){
-        
+    verifyOtp(@Body('otp') otp: string){
+        return this.transactionOtpService.verifyOtp(otp)
     }
 }
