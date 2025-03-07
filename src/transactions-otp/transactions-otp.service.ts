@@ -38,7 +38,13 @@ export class TransactionsOtpService {
         //generating otp
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-        const otp = this.transactionOtpRepository.create({token: otpCode, expiresAt: new Date(Date.now() + 5 * 6000)})
+      // Do this:
+        const otp = this.transactionOtpRepository.create({
+        token: otpCode, 
+        expiresAt: new Date(Date.now() + 5 * 60000),
+        customer: customer // Associate the OTP with the customer
+        })
+
         await this.transactionOtpRepository.save(otp)
 
         //sending otp via sms
@@ -56,19 +62,40 @@ export class TransactionsOtpService {
     }
 
     //function to verify otp
-    async verifyOtp(otp){
+   async verifyOtp(otp: string, accountNumber: string) {
+    // Find the account to get the customer
+    const account = await this.accountRepository.findOne({
+        where: { accountNumber },
+        relations: ['customer']
+    });
 
-        const otpRecord = await this.transactionOtpRepository.findOne({
-            where: {token: otp, isUsed: false},
-            relations : ['customer']
-        });
-
-        if(!otpRecord || otpRecord.expiresAt.getTime() < Date.now()){
-            throw new BadRequestException('Invalid or expired OTP')
-        }
-
-        otpRecord.isUsed = true;
-        await this.transactionOtpRepository.save(otpRecord)
-
+    if (!account) {
+        throw new NotFoundException('Account not found');
     }
+
+    // Now find the OTP record specifically for this customer
+    const otpRecord = await this.transactionOtpRepository.findOne({
+        where: {
+            token: otp,
+            isUsed: false,
+            customer: { id: account.customer.id } // Ensure OTP belongs to this customer
+        }
+    });
+
+    if (!otpRecord) {
+        throw new BadRequestException('Invalid OTP for this account');
+    }
+
+    if (otpRecord.expiresAt.getTime() < Date.now()) {
+        throw new BadRequestException('Expired OTP');
+    }
+
+    // Mark as used
+    otpRecord.isUsed = true;
+    otpRecord.usedAt = new Date();
+    await this.transactionOtpRepository.save(otpRecord);
+
+    return { message: "OTP verification successful" };
+}
+
 }

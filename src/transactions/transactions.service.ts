@@ -14,11 +14,15 @@ import { Banks } from './entities/banks.entity';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 import { UtilityPaymentDto } from './dto/utility-payment.dto';
 import { Agent } from 'src/agents/entities/agent.entity';
+import { TransactionsOtpService } from 'src/transactions-otp/transactions-otp.service';
 
 @Injectable()
 export class TransactionsService {
 
   constructor(
+
+    private readonly transactionsOtpService :TransactionsOtpService,
+
     @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
 
@@ -48,7 +52,11 @@ export class TransactionsService {
   ) {}
 
   //function to withdraw money
-  async createWithdraw(createTransactionDto: CreateTransactionDto, agentId: string) {
+  async createWithdraw(createTransactionDto: CreateTransactionDto, agentId: string, otp: string) {
+
+    // Verify OTP before proceeding
+    await this.transactionsOtpService.verifyOtp(otp, createTransactionDto.customerAccount);
+
     // Start a database transaction
     const queryRunner = this.dataSource.createQueryRunner();
     
@@ -275,6 +283,7 @@ export class TransactionsService {
 
   }
 
+  //function to transfer money
   async createTransfer(createTransferDto: CreateTransferDto, agentId: string){
     // Start a database transaction
     const queryRunner = this.dataSource.createQueryRunner();

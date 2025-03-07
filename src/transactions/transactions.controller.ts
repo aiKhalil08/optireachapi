@@ -10,9 +10,12 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post('withdraw')
-  createWithdraw(@Body() createTransactionDto: CreateTransactionDto, @Req() request) {
+  createWithdraw(
+    @Body() createTransactionDto: CreateTransactionDto, 
+    @Body('otp') otp: string,
+    @Req() request) {
     const agentId = "550e8400-e29b-41d4-a716-446655440001"
-    return this.transactionsService.createWithdraw(createTransactionDto, agentId);
+    return this.transactionsService.createWithdraw(createTransactionDto, agentId, otp);
   }
 
   @Post('deposite')

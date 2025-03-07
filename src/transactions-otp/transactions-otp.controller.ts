@@ -13,7 +13,10 @@ export class TransactionsOtpController {
     }
 
     @Post('verify')
-    verifyOtp(@Body('otp') otp: string){
-        return this.transactionOtpService.verifyOtp(otp)
+    verifyOtp(
+        @Body('otp') otp: string,
+        @Body('accountNumber') accountNumber: string    
+    ){
+        return this.transactionOtpService.verifyOtp(otp, accountNumber)
     }
 }
