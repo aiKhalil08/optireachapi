@@ -28,6 +28,7 @@ import { AgentAccount } from './agents-account/entities/agentAccount.entity';
 import { TransferAccounts } from './transactions/entities/transfer-accounts.entity';
 import { Banks } from './transactions/entities/banks.entity';
 import { TransactionsOtpModule } from './transactions-otp/transactions-otp.module';
+import { TransactionOtp } from './transactions-otp/entity/create-transactions-otp.entity';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { TransactionsOtpModule } from './transactions-otp/transactions-otp.modul
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
         entities: [Agent, AgentOtp, Customer, CustomerProfile, Gender, MaritalStatus, State, LGA, Account, Transaction, TransactionClass, TransactionType,AgentAccount,
-                  TransferAccounts,Banks
+                  TransferAccounts,Banks, TransactionOtp
          ],
         synchronize: true,
         options: {

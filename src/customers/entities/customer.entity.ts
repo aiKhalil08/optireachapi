@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CustomerProfile } from "./customerProfile.entity";
 import { Account } from "src/accounts/entities/account.entity";
+import { TransactionOtp } from "src/transactions-otp/entity/create-transactions-otp.entity";
 
 @Entity()
 export class Customer {
@@ -30,4 +31,8 @@ export class Customer {
 
     @OneToOne(() => Account, account => account.customer)
     account: Account;
+
+    @OneToMany(() => TransactionOtp, (transactionOtp) => transactionOtp.customer)
+    transactionOtps: TransactionOtp[];
+
 }
