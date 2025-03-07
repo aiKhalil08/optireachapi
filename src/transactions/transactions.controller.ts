@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -10,8 +10,9 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post('withdraw')
-  createWithdraw(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionsService.createWithdraw(createTransactionDto);
+  createWithdraw(@Body() createTransactionDto: CreateTransactionDto, @Req() request) {
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createWithdraw(createTransactionDto, agentId);
   }
 
   @Post('deposite')

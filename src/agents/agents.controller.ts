@@ -45,7 +45,15 @@ export class AgentsController {
   @Get(':transactions') // Use :agentId as the route parameter
   findAgentTransaction(@Query('agentId') agentId: string) { // Access it as agentId
       return this.agentsService.findAgentTransactions(agentId);
-  }
+  } 
+
+  // @Get(':allTransaction')
+  // findAllAgentTransaction(@Query('agentId') agentId: string
+  //                         @
+  // ){
+  //   return this.agentsService.findAllAgentTransaction(agentId);
+  // }
+ 
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAgentDto: UpdateAgentDto) {

@@ -17,7 +17,4 @@ export class TransferAccounts{
     @OneToOne(() => Banks, bank => bank.transferAccount)
     @JoinColumn()
     bank: Banks;
-
-    @OneToMany(() => Transaction, transaction => transaction.transferAccount)
-    transactions: Transaction[]
 }

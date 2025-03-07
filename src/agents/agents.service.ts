@@ -158,23 +158,42 @@ export class AgentsService {
         return `This action returns a #${id} agent`;
     }
 
-    //function to find all the transactions for a single agent
+    //function to find the last 10 transactions for a single agent
     async findAgentTransactions(agentId: string) {
         const agent = await this.agentRepository.findOne({
-            where: { id: agentId }, // Find the agent by ID
-            relations: ['agentAccount', 'agentAccount.transactions'], // Include related entities
+            where: { id: agentId },
         });
-
+    
         if (!agent) {
             throw new NotFoundException('Agent not found');
         }
-
-        if (!agent.agentAccount) {
-            throw new NotFoundException('Agent account not found');
+    
+        // Fetch the latest 10 transactions using QueryBuilder
+        const transactions = await this.agentRepository
+            .createQueryBuilder('agent')
+            .leftJoinAndSelect('agent.agentAccount', 'agentAccount')
+            .leftJoinAndSelect('agentAccount.transactions', 'transactions')
+            .where('agent.id = :agentId', { agentId })
+            .orderBy('transactions.createdAt', 'DESC') // Sort by createdAt in descending order
+            .take(10) // Limit to 10 transactions
+            .getMany();
+    
+        if (!transactions.length || !transactions[0].agentAccount) {
+            throw new NotFoundException('Agent account or transactions not found');
         }
+    
+        return transactions[0].agentAccount.transactions;
+    }
 
-        // Return the transactions associated with the agent's account
-        return agent.agentAccount.transactions;
+    //function to find all the transactions for a single agent
+    async findAllAgentTransaction(agentId: string){
+        const agent = await this.agentRepository.findOne({
+            where: { id: agentId },
+        });
+    
+        if (!agent) {
+            throw new NotFoundException('Agent not found');
+        }
     }
 
     update(id: number, updateAgentDto: UpdateAgentDto) {

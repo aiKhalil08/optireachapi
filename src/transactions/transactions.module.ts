@@ -9,10 +9,11 @@ import { Account } from 'src/accounts/entities/account.entity';
 import { AgentAccount } from 'src/agents-account/entities/agentAccount.entity';
 import { Banks } from './entities/banks.entity';
 import { TransferAccounts } from './entities/transfer-accounts.entity';
+import { Agent } from 'http';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Transaction, TransactionClass, TransactionType, Account, AgentAccount,Banks,TransferAccounts])
+        TypeOrmModule.forFeature([Transaction, TransactionClass, TransactionType, Account, AgentAccount,Banks,TransferAccounts, Agent])
     ],
     controllers: [TransactionsController],
     providers: [TransactionsService],

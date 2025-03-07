@@ -13,11 +13,15 @@ import { TransferAccounts } from './entities/transfer-accounts.entity';
 import { Banks } from './entities/banks.entity';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 import { UtilityPaymentDto } from './dto/utility-payment.dto';
+import { Agent } from 'src/agents/entities/agent.entity';
 
 @Injectable()
 export class TransactionsService {
 
   constructor(
+    @InjectRepository(Agent)
+    private readonly agentRepository: Repository<Agent>,
+
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
 
@@ -44,7 +48,7 @@ export class TransactionsService {
   ) {}
 
   //function to withdraw money
-  async createWithdraw(createTransactionDto: CreateTransactionDto) {
+  async createWithdraw(createTransactionDto: CreateTransactionDto, agentId: string) {
     // Start a database transaction
     const queryRunner = this.dataSource.createQueryRunner();
     
@@ -53,6 +57,24 @@ export class TransactionsService {
     await queryRunner.startTransaction();
 
     try {
+      // check if the authenticated agent exists
+      const existingAgent = await queryRunner.manager.findOne(Agent, {
+        where: {id: agentId}
+      });
+
+      if(!existingAgent){
+        throw new NotFoundException("Authenticated agent does not exist");
+      }
+
+       // Find agent account using the query runner's manager and ensuring it belongs to the authenticated agent
+        const existingAgentAccount = await queryRunner.manager.findOne(AgentAccount, { 
+            where: { accountNumber: createTransactionDto.agentAccount, agent: existingAgent }
+        });
+
+        if (!existingAgentAccount) {
+            throw new NotFoundException("Agent account does not belong to authenticated agent");
+        }
+
         // Find customer account using the query runner's manager
         const existingCustomerAccount = await queryRunner.manager.findOne(Account, { 
             where: { accountNumber: createTransactionDto.customerAccount }
@@ -60,7 +82,7 @@ export class TransactionsService {
 
         // Checking if the customer has an account
         if (!existingCustomerAccount) {
-            throw new NotFoundException("Agent account does not exist");
+            throw new NotFoundException("Customer account does not exist");
         }
 
         // Calculate fee as 0.5% of the withdrawal amount
@@ -72,15 +94,6 @@ export class TransactionsService {
         // Checking if the customer has enough cash to withdraw
         if (existingCustomerAccount.balance < totalAmountNeeded) {
             throw new BadRequestException("Insufficient balance to perform the withdrawal (includes 0.5% fee)");
-        }
-
-        // Find agent account using the query runner's manager
-        const existingAgentAccount = await queryRunner.manager.findOne(AgentAccount, { 
-            where: { accountNumber: createTransactionDto.agentAccount }
-        });
-
-        if (!existingAgentAccount) {
-            throw new NotFoundException("Agent account does not exist");
         }
 
         // Fetch Transaction Class (Debit) using query runner's manager
@@ -115,7 +128,7 @@ export class TransactionsService {
         const transaction = new Transaction();
         transaction.amount = createTransactionDto.amount;
         transaction.account = existingCustomerAccount;
-        transaction.agentAccount = existingAgentAccount;
+        transaction.agent = existingAgent;
         transaction.transactionType = transactionType;
         transaction.transactionClass = transactionClass;
         transaction.details = {
@@ -125,6 +138,7 @@ export class TransactionsService {
             totalAmountDeducted: totalAmountNeeded,
             customerAccount: existingCustomerAccount.accountNumber,
             agentAccount: existingAgentAccount.accountNumber,
+            agentId: existingAgent.id
         };
    
         await queryRunner.manager.save(transaction);
@@ -216,7 +230,7 @@ export class TransactionsService {
         const transaction = new Transaction();
         transaction.amount = createTransactionDto.amount;
         transaction.account = existingCustomerAccount;
-        transaction.agentAccount = existingAgentAccount;
+        // transaction.agentAccount = existingAgentAccount;
         transaction.transactionType = transactionType;
         transaction.transactionClass = transactionClass;
         transaction.details = {
@@ -323,7 +337,7 @@ export class TransactionsService {
         const transaction = new Transaction();
         transaction.amount = createTransferDto.amount;
         transaction.account = existingSenderAccount;
-        transaction.agentAccount = existingAgentAccount;
+        // transaction.agentAccount = existingAgentAccount;
         transaction.transactionType = transactionType;
         transaction.transactionClass = transactionClass;
         transaction.details = {
@@ -431,7 +445,7 @@ export class TransactionsService {
       const transaction = new Transaction();
       transaction.amount = utilityPaymentDto.amount;
       transaction.account = existingCustomerAccount;
-      transaction.agentAccount = existingAgentAccount;
+      // transaction.agentAccount = existingAgentAccount;
       transaction.transactionType = transactionType;
       transaction.transactionClass = transactionClass;
       transaction.details = {
