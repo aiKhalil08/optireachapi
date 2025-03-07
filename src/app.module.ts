@@ -27,6 +27,7 @@ import { AgentsAccountModule } from './agents-account/agents-account.module';
 import { AgentAccount } from './agents-account/entities/agentAccount.entity';
 import { TransferAccounts } from './transactions/entities/transfer-accounts.entity';
 import { Banks } from './transactions/entities/banks.entity';
+import { TransactionsOtpModule } from './transactions-otp/transactions-otp.module';
 
 @Module({
   imports: [
@@ -55,7 +56,8 @@ import { Banks } from './transactions/entities/banks.entity';
     MaritalStatusesModule,
     AccountsModule,
     TransactionsModule,
-    AgentsAccountModule
+    AgentsAccountModule,
+    TransactionsOtpModule
   ],
   controllers: [AppController],
   providers: [AppService],
