@@ -75,7 +75,7 @@ export class AgentsService {
             if (error instanceof ConflictException)
                 throw error;
 
-            throw error;
+            throw new Error(error.message);
         }
     }
 
