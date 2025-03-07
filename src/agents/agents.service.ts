@@ -27,13 +27,13 @@ export class AgentsService {
         private agentOtpRepository: Repository<AgentOtp>,
 
         @InjectRepository(Transaction)
-        private transactionRepository: Repository<Transaction>
+        private transactionRepository: Repository<Transaction>,
 
         // @InjectRepository(Transaction)
         // private agentTransactionRepository: Repository<Transaction>,
 
-        // @InjectRepository(AgentAccount)
-        // private agentAccountRepository: Repository<AgentAccount>
+        @InjectRepository(AgentAccount)
+        private agentAccountRepository: Repository<AgentAccount>
     ) {}
 
     async create(createAgentDto: CreateAgentDto): Promise<Agent> {
@@ -218,6 +218,20 @@ async findAgentTransactions(agentId: string) {
             pageSize: limit,
         };
     }
+
+    //function to return agent balance
+    async findAgentBalance(agentId: string){
+        const agentBalance = await this.agentAccountRepository.findOne({
+            where: {agent: {id: agentId}}
+        })
+
+        if(!agentBalance){
+            throw new NotFoundException('Agent account not found');
+        }
+
+        return{ balance: agentBalance.balance};
+    }
+
 
     update(id: number, updateAgentDto: UpdateAgentDto) {
         return `This action updates a #${id} agent`;

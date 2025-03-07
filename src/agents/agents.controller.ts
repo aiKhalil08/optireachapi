@@ -56,6 +56,11 @@ export class AgentsController {
     console.log(`API HIT: /agents/allTransaction`);
     return this.agentsService.findAllAgentTransaction(agentId, page, limit);
   }
+
+  @Get('balance')
+  findAgentBalance(  @Query('agentId') agentId: string){
+    return this.agentsService.findAgentBalance(agentId);
+  }
  
 
   @Patch(':id')
