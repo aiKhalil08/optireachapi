@@ -5,11 +5,6 @@ export class UtilityPaymentDto {
 
     @IsString()
     @IsNotEmpty()
-    @Length(10,10)
-    agentAccount: string;
-
-    @IsString()
-    @IsNotEmpty()
     @Length(10, 10)
     customerAccount: string; 
 

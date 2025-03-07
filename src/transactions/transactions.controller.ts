@@ -16,18 +16,21 @@ export class TransactionsController {
   }
 
   @Post('deposite')
-  createDeposite(@Body() createTransactionDto: CreateTransactionDto){
-    return this.transactionsService.createDeposite(createTransactionDto);
+  createDeposite(@Body() createTransactionDto: CreateTransactionDto, @Req() request){
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createDeposite(createTransactionDto, agentId);
   }
 
   @Post('transfer')
-  createTransfer(@Body() createTransferDto: CreateTransferDto){
-    return this.transactionsService.createTransfer(createTransferDto);
+  createTransfer(@Body() createTransferDto: CreateTransferDto, @Req() request){
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createTransfer(createTransferDto, agentId);
   }
 
   @Post('utilities')
-  createUtilities(@Body() utilityPaymentDto: UtilityPaymentDto){
-    return this.transactionsService.createUtilities(utilityPaymentDto);
+  createUtilities(@Body() utilityPaymentDto: UtilityPaymentDto, @Req() request){
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createUtilities(utilityPaymentDto, agentId);
   }
 
   @Get()
