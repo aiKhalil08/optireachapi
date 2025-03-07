@@ -66,6 +66,9 @@ export class AgentsService {
             smsOtp.token = this._generateOtp();
             smsOtp.expiresAt = new Date(new Date().getTime() + (15 * 60 * 1000));
 
+            console.log('email otp', emailOtp.token);
+            console.log('sms otp', smsOtp.token);
+
             agent.otps = [emailOtp, smsOtp];
 
             this._sendEmailOtp(createAgentDto.email);
