@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
@@ -42,10 +42,26 @@ export class AgentsController {
   // }
 
   //get all agent transactions
-  @Get(':transactions') // Use :agentId as the route parameter
-  findAgentTransaction(@Query('agentId') agentId: string) { // Access it as agentId
+  @Get('transaction') 
+  findAgentTransaction(@Query('agentId') agentId: string,){ 
       return this.agentsService.findAgentTransactions(agentId);
+  } 
+
+  @Get('transaction/all')
+  findAllAgentTransaction(
+    @Query('agentId') agentId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
+  ){
+    console.log(`API HIT: /agents/allTransaction`);
+    return this.agentsService.findAllAgentTransaction(agentId, page, limit);
   }
+
+  @Get('balance')
+  findAgentBalance(  @Query('agentId') agentId: string){
+    return this.agentsService.findAgentBalance(agentId);
+  }
+ 
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAgentDto: UpdateAgentDto) {

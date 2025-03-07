@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -10,23 +10,39 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post('withdraw')
-  createWithdraw(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionsService.createWithdraw(createTransactionDto);
+  createWithdraw(
+    @Body() createTransactionDto: CreateTransactionDto, 
+    @Body('otp') otp: string,
+    @Req() request) {
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createWithdraw(createTransactionDto, agentId, otp);
   }
 
   @Post('deposite')
-  createDeposite(@Body() createTransactionDto: CreateTransactionDto){
-    return this.transactionsService.createDeposite(createTransactionDto);
+  createDeposite(
+    @Body() createTransactionDto: CreateTransactionDto, 
+    @Body('otp') otp: string,
+    @Req() request){
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createDeposite(createTransactionDto, agentId, otp);
   }
 
   @Post('transfer')
-  createTransfer(@Body() createTransferDto: CreateTransferDto){
-    return this.transactionsService.createTransfer(createTransferDto);
+  createTransfer(
+    @Body() createTransferDto: CreateTransferDto, 
+    @Body('otp') otp: string,
+    @Req() request){
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createTransfer(createTransferDto, agentId, otp);
   }
 
   @Post('utilities')
-  createUtilities(@Body() utilityPaymentDto: UtilityPaymentDto){
-    return this.transactionsService.createUtilities(utilityPaymentDto);
+  createUtilities(
+    @Body() utilityPaymentDto: UtilityPaymentDto, 
+    @Body('otp') otp: string,
+    @Req() request){
+    const agentId = "550e8400-e29b-41d4-a716-446655440001"
+    return this.transactionsService.createUtilities(utilityPaymentDto, agentId, otp);
   }
 
   @Get()

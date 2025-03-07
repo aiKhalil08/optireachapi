@@ -2,12 +2,6 @@ import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 
 
 export class CreateTransferDto {
-    
-    @IsString()
-    @IsNotEmpty()
-    @Length(10,10)
-    agentAccount: string;
-
     @IsString()
     @IsNotEmpty()
     @Length(10, 10)
