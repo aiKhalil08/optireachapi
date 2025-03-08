@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { CheckCustomerBalance } from './dto/check-customer-balance.dto';
 
 @Controller('customers')
 export class CustomersController {
@@ -30,5 +31,11 @@ export class CustomersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.customersService.remove(+id);
+  }
+
+  
+  @Post('balance')
+  accountBalance(@Body() checkCustomerBalance: CheckCustomerBalance){
+    return this.customersService.accountBalance(checkCustomerBalance);
   }
 }

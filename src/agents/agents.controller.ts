@@ -58,7 +58,7 @@ export class AgentsController {
   }
 
   @Get('balance')
-  findAgentBalance(  @Query('agentId') agentId: string){
+  findAgentBalance( @Query('agentId') agentId: string){
     return this.agentsService.findAgentBalance(agentId);
   }
  

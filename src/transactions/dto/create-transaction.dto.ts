@@ -16,4 +16,9 @@ export class CreateTransactionDto {
     @IsNumber()
     @IsNotEmpty()
     amount: number;
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(6,6)
+    otp: string;
 }

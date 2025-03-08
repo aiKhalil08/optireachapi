@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { TransactionsOtpService } from './transactions-otp.service';
+import { CreateTransactionOtp } from './dto/create-transactionOtp-dto';
 
 @Controller('transactions-otp')
 export class TransactionsOtpController {
@@ -8,15 +9,12 @@ export class TransactionsOtpController {
     ){}
 
     @Post('generate')
-    generateOtp(@Body('accountNumber') accountNumber: string,){
-        return this.transactionOtpService.generateOtp(accountNumber);
+    generateOtp(@Body() createTransactionOtp: CreateTransactionOtp){
+        return this.transactionOtpService.generateOtp(createTransactionOtp);
     }
 
-    @Post('verify')
-    verifyOtp(
-        @Body('otp') otp: string,
-        @Body('accountNumber') accountNumber: string    
-    ){
-        return this.transactionOtpService.verifyOtp(otp, accountNumber)
-    }
+    // @Post('verify')
+    // verifyOtp(@Body() verifyTransactionOtp: VerifyTransactionOtp){
+    //     return this.transactionOtpService.verifyOtp(verifyTransactionOtp.agentAccount, )
+    // }
 }

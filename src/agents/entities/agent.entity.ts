@@ -24,7 +24,7 @@ export class Agent {
     @Column({length: 11, unique: true})
     bvn: string;
 
-    @Column({nullable: true})
+    @Column({nullable: true,  select: false})
     password: string;
 
     @Column({default: false, nullable: true})
