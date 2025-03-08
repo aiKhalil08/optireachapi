@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { CheckCustomerBalance } from './dto/check-customer-balance.dto';
 
 @Controller('customers')
 export class CustomersController {
@@ -33,8 +34,8 @@ export class CustomersController {
   }
 
   
-    @Post('balance')
-    accountBalance(@Body('accountNumber') accountNumber: string){
-      return this.customersService.accountBalance(accountNumber);
-    }
+  @Post('balance')
+  accountBalance(@Body() checkCustomerBalance: CheckCustomerBalance){
+    return this.customersService.accountBalance(checkCustomerBalance);
+  }
 }

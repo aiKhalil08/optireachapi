@@ -5,15 +5,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from './entities/customer.entity';
 import { Repository } from 'typeorm';
 import { Account } from 'src/accounts/entities/account.entity';
+import { CheckCustomerBalance } from './dto/check-customer-balance.dto';
+import { TransactionOtp } from 'src/transactions-otp/entity/create-transactions-otp.entity';
+import { TransactionsOtpService } from 'src/transactions-otp/transactions-otp.service';
 
 @Injectable()
 export class CustomersService {
     constructor(
+
+       private readonly transactionsOtpService :TransactionsOtpService,
+
         @InjectRepository(Customer)
         private customerRepository: Repository<Customer>,
 
         @InjectRepository(Account)
-        private accountRepository: Repository<Account>
+        private accountRepository: Repository<Account>,
+
     ) {}
 
   async create(createCustomerDto: CreateCustomerDto) {
@@ -41,23 +48,27 @@ export class CustomersService {
   }
 
   //function to retrieve a single customer balance
-  async accountBalance(accountNumber: string){
-      const customerBalance = await this.accountRepository.findOne({
-          where:{accountNumber: accountNumber},
-          relations: ['customer']
-      })
+  async accountBalance(checkCustomerBalance: CheckCustomerBalance){
 
-      if(!customerBalance){
-          return new NotFoundException("Customer account does not exist")
-      }
+    // Verify OTP before proceeding
+    await this.transactionsOtpService.verifyOtp(checkCustomerBalance.otp, checkCustomerBalance.accountNumber);
 
-      const customer = customerBalance.customer
+    const customerBalance = await this.accountRepository.findOne({
+        where:{accountNumber: checkCustomerBalance.accountNumber},
+        relations: ['customer']
+    })
 
-      return {balance: customerBalance.balance,
-        customerFirstName: customer.firstName,
-        customerLastName: customer.lastName,
-        customerNumber: customer.phoneNumber
-      };
+    if(!customerBalance){
+        return new NotFoundException("Customer account does not exist")
+    }
+
+    const customer = customerBalance.customer
+
+    return {balance: customerBalance.balance,
+      customerFirstName: customer.firstName,
+      customerLastName: customer.lastName,
+      customerNumber: customer.phoneNumber
+    };
   }
       
 }
