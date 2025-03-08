@@ -12,37 +12,33 @@ export class TransactionsController {
   @Post('withdraw')
   createWithdraw(
     @Body() createTransactionDto: CreateTransactionDto, 
-    @Body('otp') otp: string,
     @Req() request) {
     const agentId = "550e8400-e29b-41d4-a716-446655440001"
-    return this.transactionsService.createWithdraw(createTransactionDto, agentId, otp);
+    return this.transactionsService.createWithdraw(createTransactionDto, agentId);
   }
 
   @Post('deposite')
   createDeposite(
     @Body() createTransactionDto: CreateTransactionDto, 
-    @Body('otp') otp: string,
     @Req() request){
     const agentId = "550e8400-e29b-41d4-a716-446655440001"
-    return this.transactionsService.createDeposite(createTransactionDto, agentId, otp);
+    return this.transactionsService.createDeposite(createTransactionDto, agentId);
   }
 
   @Post('transfer')
   createTransfer(
     @Body() createTransferDto: CreateTransferDto, 
-    @Body('otp') otp: string,
     @Req() request){
     const agentId = "550e8400-e29b-41d4-a716-446655440001"
-    return this.transactionsService.createTransfer(createTransferDto, agentId, otp);
+    return this.transactionsService.createTransfer(createTransferDto, agentId);
   }
 
   @Post('utilities')
   createUtilities(
     @Body() utilityPaymentDto: UtilityPaymentDto, 
-    @Body('otp') otp: string,
     @Req() request){
     const agentId = "550e8400-e29b-41d4-a716-446655440001"
-    return this.transactionsService.createUtilities(utilityPaymentDto, agentId, otp);
+    return this.transactionsService.createUtilities(utilityPaymentDto, agentId);
   }
 
   @Get()

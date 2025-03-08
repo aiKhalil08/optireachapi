@@ -19,4 +19,9 @@ export class UtilityPaymentDto {
     @IsString()
     @IsNotEmpty()
     recipient: string; // Phone number or meter number
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(6,6)
+    otp: string;
 }

@@ -4,6 +4,8 @@ import { TransactionOtp } from './entity/create-transactions-otp.entity';
 import { Repository } from 'typeorm';
 import { Account } from 'src/accounts/entities/account.entity';
 import { Twilio } from 'twilio';
+import { CreateTransactionOtp } from './dto/create-transactionOtp-dto';
+
 
 @Injectable()
 export class TransactionsOtpService {
@@ -20,9 +22,9 @@ export class TransactionsOtpService {
     private twilioPhone = process.env.TWILIO_PHONE_NUMBER;
     
     //function to generate otp
-    async generateOtp(accountNumber: string){
+    async generateOtp(createTransactionOtp: CreateTransactionOtp){
         const account = await this.accountRepository.findOne({
-            where: {accountNumber: accountNumber},
+            where: {accountNumber: createTransactionOtp.accountNumber},
             relations: ['customer']
         });
 
@@ -61,11 +63,12 @@ export class TransactionsOtpService {
         return {message: "Otp sent"}
     }
 
+    //this does not have a controller because it is used internally
     //function to verify otp
    async verifyOtp(otp: string, accountNumber: string) {
     // Find the account to get the customer
     const account = await this.accountRepository.findOne({
-        where: { accountNumber },
+        where: {accountNumber: accountNumber },
         relations: ['customer']
     });
 
