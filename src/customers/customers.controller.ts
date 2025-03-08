@@ -33,8 +33,8 @@ export class CustomersController {
   }
 
   
-    @Get('balance')
-    accountBalance(@Query('id') id: string){
-      return this.customersService.accountBalance(id);
+    @Post('balance')
+    accountBalance(@Body('accountNumber') accountNumber: string){
+      return this.customersService.accountBalance(accountNumber);
     }
 }

@@ -4,12 +4,16 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from './entities/customer.entity';
 import { Repository } from 'typeorm';
+import { Account } from 'src/accounts/entities/account.entity';
 
 @Injectable()
 export class CustomersService {
     constructor(
         @InjectRepository(Customer)
-        private customerRepository: Repository<Customer>
+        private customerRepository: Repository<Customer>,
+
+        @InjectRepository(Account)
+        private accountRepository: Repository<Account>
     ) {}
 
   async create(createCustomerDto: CreateCustomerDto) {
@@ -37,19 +41,23 @@ export class CustomersService {
   }
 
   //function to retrieve a single customer balance
-      async accountBalance(id: string){
-          const customer = await this.customerRepository.findOne({
-              where:{id:id},
-              relations: ['account']
-          })
-  
-          if(!customer){
-              return new NotFoundException("Customer account does not exist")
-          }
+  async accountBalance(accountNumber: string){
+      const customerBalance = await this.accountRepository.findOne({
+          where:{accountNumber: accountNumber},
+          relations: ['customer']
+      })
 
-         const customerBalance = customer.account
-  
-          return {balance: customerBalance.balance};
+      if(!customerBalance){
+          return new NotFoundException("Customer account does not exist")
       }
+
+      const customer = customerBalance.customer
+
+      return {balance: customerBalance.balance,
+        customerFirstName: customer.firstName,
+        customerLastName: customer.lastName,
+        customerNumber: customer.phoneNumber
+      };
+  }
       
 }
