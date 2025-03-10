@@ -2,11 +2,13 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/commo
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginDto } from './dto/login.dto';
+import { Public } from './allowPublicDecorator';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService){}
 
+    @Public()
     @HttpCode(HttpStatus.OK)
     @Post('login')
     signIn(@Body() loginDto: LoginDto){

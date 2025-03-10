@@ -71,8 +71,8 @@ export class AgentsService {
 
             agent.otps = [emailOtp, smsOtp];
 
-            this._sendEmailOtp(createAgentDto.email);
-            this._sendSmsOtp(createAgentDto.phoneNumber);
+            this._sendEmailOtp(createAgentDto.email, emailOtp);
+            this._sendSmsOtp(createAgentDto.phoneNumber, smsOtp);
 
             // return {status: true, message: "Email and SMS OTPs have been sent", agent: await this.agentRepository.save(agent)};
             return await this.agentRepository.save(agent);
@@ -265,7 +265,7 @@ async findAgentTransactions(agentId: string) {
         return true;
     }
 
-    private async _sendEmailOtp(email: string) {
+    private async _sendEmailOtp(email: string, otp: AgentOtp) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth:{
@@ -274,7 +274,7 @@ async findAgentTransactions(agentId: string) {
             }
         });
 
-        const otpCode = this._generateOtp();
+        // const otpCode = this._generateOtp();
 
         try{
             // this._attachOtp(otpCode, {type: 'email', email})
@@ -283,8 +283,8 @@ async findAgentTransactions(agentId: string) {
                 from: process.env.EMAIL_USER,
                 to: email,
                 subject: 'Your OTP Code',
-                text: `Your OTP is ${otpCode}`,
-                html: `<p>Your OTP code is : <strong>${otpCode}</strong></p>`
+                text: `Your OTP is ${otp.token}`,
+                html: `<p>Your OTP code is : <strong>${otp.token}</strong></p>`
             })
         }catch(error){
             console.log(error);
@@ -293,7 +293,7 @@ async findAgentTransactions(agentId: string) {
 
     }
 
-    private async _sendSmsOtp(phoneNumber: string) {
+    private async _sendSmsOtp(phoneNumber: string, otp: AgentOtp) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth:{
@@ -302,7 +302,7 @@ async findAgentTransactions(agentId: string) {
             }
         });
 
-        const otpCode = this._generateOtp();
+        // const otpCode = this._generateOtp();
 
         try{
             // this._attachOtp(otpCode, {type: 'phoneNumber', phoneNumber})

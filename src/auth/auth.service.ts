@@ -21,6 +21,7 @@ export class AuthService {
         if (!agent)
             throw new NotFoundException("User not found");
 
+        // console.log(loginDto, agent)
         const isPasswordValid =  await bcrypt.compare(loginDto.password, agent.password);
 
         if (!isPasswordValid)

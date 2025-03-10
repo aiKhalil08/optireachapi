@@ -5,26 +5,31 @@ import { UpdateAgentDto } from './dto/update-agent.dto';
 import { VerifyEmailDto } from './dto/verify-email-dto';
 import { VerifyPhoneDto } from './dto/verify-phone-dto';
 import { SetPasswordDto } from './dto/set-password.dto';
+import { Public } from 'src/auth/allowPublicDecorator';
 
 @Controller('agents')
 export class AgentsController {
   constructor(private readonly agentsService: AgentsService) {}
 
+    @Public()
     @Post()
     create(@Body() createAgentDto: CreateAgentDto) {
         return this.agentsService.create(createAgentDto);
     }
 
+    @Public()
     @Post('verify-email')
     verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
         return this.agentsService.verifyEmail(verifyEmailDto);
     }
 
+    @Public()
     @Post('verify-phone-number')
     verifyPhoneNumber(@Body() verifyPhoneDto: VerifyPhoneDto) {
         return this.agentsService.verifyPhoneNumber(verifyPhoneDto);
     }
 
+    @Public()
     @Patch('set-password')
     setPassword(@Body() setPasswordDto: SetPasswordDto) {
         return this.agentsService.setPassword(setPasswordDto);

@@ -1,29 +1,59 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 
-@Injectable()
-export class AuthGuard implements CanActivate{
-    constructor(private jwtService: JwtService){}
-
-    async canActivate(context: ExecutionContext){
+import {
+    CanActivate,
+    ExecutionContext,
+    Injectable,
+    UnauthorizedException,
+  } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+  import { JwtService } from '@nestjs/jwt';
+  import { Request } from 'express';
+import { IS_PUBLIC_KEY } from '../allowPublicDecorator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Agent } from 'src/agents/entities/agent.entity';
+import { Repository } from 'typeorm';
+  
+  @Injectable()
+  export class AuthGuard implements CanActivate {
+    constructor(
+        private jwtService: JwtService,
+        private reflector: Reflector,
+        @InjectRepository(Agent)
+        private readonly agentRepository: Repository<Agent>,
+    ) {}
+  
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+          ]);
+          if (isPublic) {
+            return true;
+          }
         const request = context.switchToHttp().getRequest();
-
-        //checking the bearer which contains the access token
-        const authorization = request.headers.authorization; 
-
-        //extracting the access_token in the header
-        const token = authorization?.split(' ')[1];
-
-        if(!token){
+        const token = this.extractTokenFromHeader(request);
+        if (!token) {
             throw new UnauthorizedException();
         }
-
-        try{
-            //checking if the token is valid
-            await this.jwtService.verifyAsync(token)
-            return true;
-        }catch(error){
-            throw new UnauthorizedException()
-        } 
-    }
-}
+        try {
+            const payload = await this.jwtService.verifyAsync(
+            token,
+            {
+                secret: process.env.JWT_SECRET
+            }
+            );
+            
+            request['user'] = await this.agentRepository.findOne({where: {id: payload.sub}});
+        } catch(e) {
+            console.log(e)
+            throw new UnauthorizedException();
+        }
+        return true;
+        }
+  
+        private extractTokenFromHeader(request: Request): string | undefined {
+        const [type, token] = request.headers.authorization?.split(' ') ?? [];
+        return type === 'Bearer' ? token : undefined;
+        }
+  }
+  
