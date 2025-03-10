@@ -32,7 +32,9 @@ export class AuthService {
                 firstName: agent.firstName,
                 lastName: agent.lastName,
                 email: agent.email,
-                phoneNumber: agent.phoneNumber
+                phoneNumber: agent.phoneNumber,
+                tier: agent.tier,
+                avatar: agent.imageUrl
             },
             access_token: await this._generateJwtToken(agent)
         };

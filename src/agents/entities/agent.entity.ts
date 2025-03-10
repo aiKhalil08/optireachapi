@@ -33,6 +33,13 @@ export class Agent {
     @Column({default: false, nullable: true})
     phoneVerified: boolean;
 
+    @Column({nullable: true, default: 1})
+    tier: number;
+
+    @Column({default: "/uploads/avatar.png"})
+    imageUrl: string;
+
+
     @CreateDateColumn({nullable: true})
     createdAt: Date;
 
